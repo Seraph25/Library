@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: hotel-app
+    env: docker
+    plan: free
+    buildCommand: ./mvnw clean package -DskipTests
+    startCommand: java -jar target/*.jar
+    envVars:
+      - key: SPRING_DATASOURCE_URL
+        value: jdbc:postgresql://dpg-d0s67nu3jp1c73ecotpg-a/hotel_db_uupj
+      - key: SPRING_DATASOURCE_USERNAME
+        value: hotel_db_uupj_user
+      - key: SPRING_DATASOURCE_PASSWORD
+        value: v9BruuvNDIEMbgsFgMKlwgUO9lPNjQaM
