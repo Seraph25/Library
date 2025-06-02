@@ -6,7 +6,7 @@ COPY pom.xml .
 COPY src ./src
 
 RUN mvn dependency:go-offline
-RUN mvn package -DskipTests
+RUN mvn package -DskipTests -Dmaven.test.skip=true
 
 FROM eclipse-temurin:21-jdk
 
@@ -15,4 +15,5 @@ WORKDIR /app
 COPY --from=build /app/target/lib-rary-1.0.jar app.jar
 
 EXPOSE 8080
+
 CMD ["java", "-jar", "app.jar"]
