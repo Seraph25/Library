@@ -1,13 +1,13 @@
 services:
   - type: web
-    name: library-api
+    name: library-app
     env: docker
     plan: free
     buildCommand: ./mvnw clean package -DskipTests
-    startCommand: java -jar target/lib-rary-1.0.jar
+    startCommand: java -jar target/*.jar
     envVars:
-      - key: SPRING_DATASOURCE_JDBC_URL
-        value: jdbc:postgresql://dpg-d0upqpjipnbc73eqahf0-a.frankfurt-postgres.render.com:5432/library_db_250q?sslmode=require
+      - key: SPRING_DATASOURCE_URL
+        value: jdbc:postgresql://dpg-d0upqpjipnbc73eqahf0-a/library_db_250q
       - key: SPRING_DATASOURCE_USERNAME
         value: library_user
       - key: SPRING_DATASOURCE_PASSWORD
