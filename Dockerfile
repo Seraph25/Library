@@ -1,19 +1,14 @@
-FROM maven:3.9.6-eclipse-temurin-21 AS build
+# Use a JDK 17 base image
+FROM eclipse-temurin:17-jdk-alpine
 
+# Set the working directory
 WORKDIR /app
 
-COPY pom.xml .
-COPY src ./src
+# Copy built jar (Jar збиратиметься в CI/CD або вручну)
+COPY target/lib-rary-1.0.jar app.jar
 
-RUN mvn dependency:go-offline
-RUN mvn package -DskipTests -Dmaven.test.skip=true
-
-FROM eclipse-temurin:21-jdk
-
-WORKDIR /app
-
-COPY --from=build /app/target/lib-rary-1.0.jar app.jar
-
+# Expose port
 EXPOSE 8080
 
-CMD ["java", "-jar", "app.jar"]
+# Run the application
+ENTRYPOINT ["java", "-jar", "app.jar"]
