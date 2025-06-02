@@ -1,66 +1,58 @@
 package com.example.edu.controller;
 
 import com.example.edu.dto.AuthRequest;
-import com.example.edu.entity.Role;
 import com.example.edu.entity.User;
-import com.example.edu.repository.UserRepository;
 import com.example.edu.security.TokenService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.*;
+import com.example.edu.service.AuthService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/auth")
-@RequiredArgsConstructor
 public class AuthController {
 
-  private final UserRepository userRepository;
-  private final PasswordEncoder passwordEncoder;
-  private final AuthenticationManager authenticationManager;
-  private final TokenService tokenService;
+  @Autowired
+  private AuthService authService;
+
+  @Autowired
+  private TokenService tokenService;
+
+  @Autowired
+  private AuthenticationManager authenticationManager;
 
   @PostMapping("/register")
-  public ResponseEntity<String> register(@RequestBody AuthRequest request) {
-    if (userRepository.findByUsername(request.getUsername()).isPresent()) {
-      return ResponseEntity.badRequest().body("User already exists");
-    }
-
-    User user = User.builder()
-        .username(request.getUsername())
-        .password(passwordEncoder.encode(request.getPassword()))
-        .role(Role.USER)
-        .build();
-
-    userRepository.save(user);
-    return ResponseEntity.ok("User registered successfully");
+  public User register(@RequestBody AuthRequest request) {
+    return authService.register(request.getUsername(), request.getPassword());
   }
 
   @PostMapping("/register-admin")
-  public ResponseEntity<String> registerAdmin(@RequestBody AuthRequest request) {
-    if (userRepository.findByUsername(request.getUsername()).isPresent()) {
-      return ResponseEntity.badRequest().body("Admin already exists");
-    }
-
-    User user = User.builder()
-        .username(request.getUsername())
-        .password(passwordEncoder.encode(request.getPassword()))
-        .role(Role.ADMIN)
-        .build();
-
-    userRepository.save(user);
-    return ResponseEntity.ok("Admin registered successfully");
+  public User registerAdmin(@RequestBody AuthRequest request) {
+    return authService.registerAdmin(request.getUsername(), request.getPassword());
   }
 
   @PostMapping("/login")
-  public ResponseEntity<String> login(@RequestBody AuthRequest request) {
-    Authentication authentication = authenticationManager.authenticate(
-        new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
-    );
+  public Map<String, Object> login(@RequestBody AuthRequest request) {
+    try {
+      Authentication auth = authenticationManager.authenticate(
+          new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
+      );
 
-    String token = tokenService.generateToken(authentication.getName());
-    return ResponseEntity.ok(token);
+      String token = tokenService.generateToken(request.getUsername());
+
+      Map<String, Object> response = new HashMap<>();
+      response.put("token", token);
+      response.put("message", "Login successful");
+
+      return response;
+    } catch (AuthenticationException e) {
+      throw new RuntimeException("Invalid credentials");
+    }
   }
 }
