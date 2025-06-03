@@ -2,6 +2,7 @@ package com.example.edu.service;
 
 import com.example.edu.entity.Borrowing;
 import com.example.edu.repository.BorrowingRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -9,40 +10,37 @@ import java.util.Optional;
 
 @Service
 public class BorrowingService {
-  private final BorrowingRepository repo;
+  @Autowired
+  private BorrowingRepository borrowingRepository;
 
-  public BorrowingService(BorrowingRepository repo) {
-    this.repo = repo;
+  public List<Borrowing> getAll() {
+    return borrowingRepository.findAll();
   }
 
   public List<Borrowing> getActiveBorrowings() {
-    return repo.findByReturnedFalse();
+    return borrowingRepository.findByReturnedFalse();
   }
 
-  public Borrowing save(Borrowing b) {
-    b.setReturned(false);
-    if (b.getBook() != null) {
-      b.getBook().setAvailable(false);
+  public Borrowing save(Borrowing borrowing) {
+    borrowing.setReturned(false);
+    if (borrowing.getBook() != null) {
+      borrowing.getBook().setAvailable(false);
     }
-    return repo.save(b);
+    return borrowingRepository.save(borrowing);
   }
 
   public void deleteById(Long id) {
-    repo.deleteById(id);
-  }
-
-  public List<Borrowing> getAll() {
-    return repo.findAll();
+    borrowingRepository.deleteById(id);
   }
 
   public Optional<Borrowing> returnBook(Long id) {
-    Optional<Borrowing> optional = repo.findById(id);
+    Optional<Borrowing> optional = borrowingRepository.findById(id);
     optional.ifPresent(b -> {
       b.setReturned(true);
       if (b.getBook() != null) {
         b.getBook().setAvailable(true);
       }
-      repo.save(b);
+      borrowingRepository.save(b);
     });
     return optional;
   }
