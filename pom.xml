@@ -13,7 +13,7 @@
 	<description>Hotel Booking Backend with Spring Boot</description>
 
 	<properties>
-		<java.version>21</java.version>
+		<java.version>17</java.version>
 		<spring-boot.version>3.2.4</spring-boot.version>
 	</properties>
 
