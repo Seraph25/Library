@@ -5,17 +5,15 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.example</groupId>
-	<artifactId>hotel-booking</artifactId>
-	<version>1.0.0</version>
+	<artifactId>lib-rary</artifactId>
+	<version>1.0</version>
 	<packaging>jar</packaging>
 
-	<name>hotel-booking</name>
-	<description>Hotel Booking Backend with Spring Boot</description>
-
+	<name>Library</name>
 	<properties>
 		<java.version>17</java.version>
-		<spring-boot.version>3.2.4</spring-boot.version>
 	</properties>
+
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
